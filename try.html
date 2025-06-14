@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iman Akbar - Web3 Graphic Design Portfolio</title>
+    <!-- Favicon - You can replace this with your own icon -->
+    <link rel="icon" href="https://placehold.co/32x32/1a202c/ffffff?text=W3" type="image/x-icon">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for a modern look -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Three.js CDN for 3D animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        /* Base styles from original template (dark theme, scrollbar, animations) */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at top left, #0a0a0a 0%, #1a082b 100%); /* Black to deep purple */
+            color: #e2e8f0; /* Light gray text for contrast */
+            line-height: 1.6; /* From new code */
+            -webkit-font-smoothing: antialiased; /* From new code */
+            -moz-osx-smoothing: grayscale; /* From new code */
+            overflow-x: hidden; /* From new code */
+            margin: 0; /* From new code */
+        }
+        /* Gradient text for headings using purple and light pink */
+        .gradient-text {
+            background-image: linear-gradient(to right, #a855f7, #ec4899); /* Purple to light pink gradient */
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        /* Custom scrollbar for a cleaner look, using purple accent */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e0b30; /* Darker purple */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #a855f7; /* Purple accent */
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ec4899; /* Light pink accent on hover */
+        }
+
+        /* Keyframe for hero text fade-in */
+        @keyframes fadeInSlideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in-slide-up {
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+        }
+        .fade-in-slide-up-delay-1 { animation-delay: 0.2s; }
+        .fade-in-slide-up-delay-2 { animation-delay: 0.4s; }
+        .fade-in-slide-up-delay-3 { animation-delay: 0.6s; }
+
+        /* General transition for interactive elements */
+        .transition-all-ease {
+            transition: all 0.3s ease-in-out;
+        }
+        .portfolio-item:hover .project-image {
+            transform: scale(1.03);
+            opacity: 0.9;
+        }
+        .portfolio-item:hover .project-title {
+            color: #ec4899; /* Highlight title on hover with light pink */
+        }
+
+        /* Carousel specific styles for flipping effect */
+        .carousel-container {
+            position: relative;
+            width: 100%;
+            height: 500px; /* Fixed height for the flipping area */
+            perspective: 1000px; /* For 3D effect */
+            display: flex; /* To center the flipper */
+            justify-content: center;
+            align-items: center;
+            /* Added padding to prevent buttons from overlapping with card content edges */
+            padding: 0 50px; /* Adjust as needed */
+        }
+
+        .carousel-flipper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d; /* Children participate in 3D space */
+            /* No transition here, transition is on individual card faces */
+            max-width: 600px; /* Constrain size */
+        }
+
+        .card-face { /* This will be the "front" or "back" of the card */
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Hide the back during flip */
+            border-radius: 0.75rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #2d3748;
+            background-color: #1e0b30; /* Dark purple background */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between; /* To push button to bottom */
+            color: #e2e8f0; /* Ensure text is visible */
+            transition: transform 0.8s ease-in-out; /* Transition on the faces themselves */
+        }
+
+        /* Initial states for the two faces relative to each other */
+        /* These are the starting states. They will be dynamically updated by JS */
+        #card-face-1 { /* Default front face */
+            transform: rotateY(0deg);
+        }
+        #card-face-2 { /* Default back face */
+            transform: rotateY(180deg);
+        }
+
+        /* Styles for content within the flipped card */
+        .card-face img {
+            width: 100%;
+            height: 300px; /* Taller image as requested */
+            object-fit: cover; /* Ensures image covers the area, may crop */
+            border-radius: 0.75rem 0.75rem 0 0; /* Rounded top corners */
+        }
+
+        .card-face .p-6 {
+            flex-grow: 1; /* Allow content area to grow */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* New styles from user's provided HTML */
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+        a {
+            color: #a855f7; /* Adapted to theme */
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        a:hover, a:focus {
+            color: #ec4899; /* Adapted to theme */
+            outline-offset: 2px;
+        }
+        .container {
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+        header {
+            position: sticky;
+            top: 0;
+            background: rgba(10, 10, 10, 0.95); /* Adapted to dark theme */
+            backdrop-filter: saturate(180%) blur(10px);
+            border-bottom: 1px solid #2d3748; /* Adapted to dark theme */
+            z-index: 1000;
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px;
+        }
+        .logo {
+            font-weight: 900;
+            font-size: 1.5rem;
+            color: #a855f7; /* Adapted to theme */
+            user-select: none;
+        }
+        /* Existing Tailwind nav takes precedence for desktop, keeping this for mobile toggle */
+        nav {
+            display: none; /* Hide default nav for mobile */
+        }
+        .mobile-nav-toggle {
+            background: none;
+            border: none;
+            color: #a855f7; /* Adapted to theme */
+            font-size: 1.8rem;
+            cursor: pointer;
+            padding: 8px;
+            display: block; /* Ensure it's visible for mobile */
+        }
+        /* Mobile nav specific styles */
+        .mobile-nav {
+            position: fixed;
+            top: 0;
+            right: 0; /* Changed from left: 100% to handle slide-in from right */
+            height: 100vh;
+            width: 80vw;
+            max-width: 300px;
+            background: #1a082b; /* Adapted to theme */
+            box-shadow: -4px 0 16px rgba(0,0,0,0.4); /* Adapted to theme */
+            transition: transform 0.3s ease; /* Changed from left to transform */
+            transform: translateX(100%); /* Start hidden off-screen to the right */
+            display: flex;
+            flex-direction: column;
+            padding: 60px 24px 24px 24px;
+            z-index: 1500;
+        }
+        .mobile-nav.open {
+            transform: translateX(0); /* Slide in */
+        }
+        .mobile-nav a {
+            padding: 16px 0;
+            border-bottom: 1px solid #2d3748; /* Adapted to theme */
+            font-weight: 600;
+            color: #e2e8f0; /* Adapted to theme */
+        }
+        .mobile-nav a:last-child {
+            border-bottom: none;
+        }
+        .mobile-nav-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.8rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #e2e8f0; /* Adapted to theme */
+        }
+        main {
+            padding: 48px 0 96px 0;
+        }
+        .gallery-section {
+            background: #1e0b30; /* Adapted to theme */
+            padding: 48px 24px;
+            border-radius: 16px;
+            box-shadow: 0 12px 24px rgba(0,0,0,0.2); /* Adapted to theme */
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .gallery-title {
+            font-weight: 900;
+            font-size: 2.5rem;
+            margin-bottom: 32px;
+            color: #a855f7; /* Adapted to theme */
+            text-align: center;
+        }
+
+        /* Masonry gallery container using CSS columns */
+        .gallery-masonry {
+            column-count: 4;
+            column-gap: 24px;
+        }
+        /* Adjust columns for responsiveness */
+        @media (max-width: 1024px) {
+            .gallery-masonry {
+                column-count: 2;
+            }
+        }
+        @media (max-width: 640px) {
+            .gallery-masonry {
+                column-count: 1;
+            }
+        }
+        /* Gallery items inside columns */
+        .gallery-masonry img {
+            width: 100%;
+            margin-bottom: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Adapted to theme */
+            cursor: pointer;
+            display: block;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            break-inside: avoid; /* Prevents images from being cut in half across columns */
+        }
+        .gallery-masonry img:hover,
+        .gallery-masonry img:focus {
+            transform: scale(1.04);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.4); /* Adapted to theme */
+            outline: none;
+            z-index: 10;
+            position: relative;
+        }
+        footer {
+            background: #0a0a0a; /* Adapted to theme */
+            border-top: 1px solid #2d3748; /* Adapted to theme */
+            padding: 32px 24px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+        .footer-links {
+            margin-bottom: 12px;
+        }
+        .footer-links a {
+            margin: 0 12px;
+            color: #6b7280;
+            font-weight: 600;
+            transition: color 0.25s ease;
+        }
+        .footer-links a:hover,
+        .footer-links a:focus {
+            color: #a855f7; /* Adapted to theme */
+            outline-offset: 2px;
+        }
+        :focus-visible {
+            outline: 3px solid #ec4899; /* Adapted to theme */
+            outline-offset: 3px;
+        }
+
+        /* Three.js canvas specific styles */
+        #threejs-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0; /* Ensures it's behind content */
+            pointer-events: none; /* Allows clicks to pass through to content */
+        }
+        #hero .relative.z-10 {
+            z-index: 1; /* Ensure hero content is above the canvas */
+        }
+
+        /* Girl Avatar and Speech Bubble styles */
+        #girl-avatar-container {
+            position: fixed;
+            z-index: 9999; /* Ensure it's on top of everything */
+            pointer-events: none; /* Important: allows interaction with elements beneath */
+        }
+        #girl-avatar {
+            width: 70px; /* Adjust size as needed */
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            position: absolute;
+            bottom: 0; /* Position relative to its container */
+            left: 0;
+            transform: translate(-50%, -50%); /* Center the avatar on the cursor */
+        }
+        #speech-bubble {
+            position: absolute;
+            top: -20px; /* Adjust vertical position relative to avatar */
+            left: 80px; /* Adjust horizontal position relative to avatar */
+            background-color: #333;
+            color: #fff;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        #speech-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -8px; /* Pointer position */
+            left: 20px; /* Pointer position */
+            width: 0;
+            height: 0;
+            border-left: 8px solid transparent;
+            border-right: 8px solid transparent;
+            border-top: 8px solid #333;
+        }
+
+        /* Custom styles for software icons */
+        .software-icon {
+            width: 60px; /* Larger size */
+            height: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+            background-color: #3d254b; /* Darker background for icons */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.5rem; /* Adjust font size for text logos */
+            color: #e2e8f0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+        .software-icon:hover {
+            transform: translateY(-5px);
+        }
+        .software-icon.text-logo {
+            font-size: 1.8rem; /* Larger font for text-based logos */
+        }
+
+        @media (max-width: 768px) {
+            #girl-avatar-container {
+                display: none !important; /* Hide on small screens */
+            }
+            .mobile-nav-toggle { /* Ensure button is visible for mobile */
+                display: block;
+            }
+            /* Original desktop nav should be hidden on mobile */
+            .header-inner nav {
+                display: none;
+            }
+            /* Adjust padding for small screens */
+            .carousel-container {
+                padding: 0 10px;
+            }
+            /* Stack columns on small screens */
+            .about-content-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+
+        /* Ensure desktop nav is visible on desktop */
+        @media (min-width: 769px) {
+            .header-inner nav {
+                display: flex; /* Show desktop nav */
+            }
+            .mobile-nav-toggle {
+                display: none; /* Hide mobile toggle */
+            }
+        }
+    </style>
+</head>
+<body class="antialiased leading-relaxed">
+
+    <!-- Girl Avatar and Speech Bubble Container -->
+    <div id="girl-avatar-container">
+        <img id="girl-avatar" src="https://placehold.co/70x70/6b21a8/f472b6?text=Girl" alt="Girl Avatar">
+        <div id="speech-bubble"></div>
+    </div>
+
+    <!-- Header Section -->
+    <header class="relative z-10 py-6 px-4 sm:px-6 lg:px-8 bg-gray-900 bg-opacity-70 shadow-lg rounded-b-xl backdrop-blur-sm mx-auto max-w-7xl mt-4">
+        <div class="header-inner container">
+            <!-- Logo/Name -->
+            <a href="#" class="logo" aria-label="Graphic Designer Portfolio">
+                <span class="gradient-text">ImanAkbar.eth</span>
+            </a>
+            <!-- Desktop Navigation -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="#about" class="text-gray-300 hover:text-white transition-all-ease hover:scale-105">About</a>
+                <a href="#case-studies" class="text-gray-300 hover:text-white transition-all-ease hover:scale-105">Case Studies</a>
+                <a href="#portfolio" class="text-gray-300 hover:text-white transition-all-ease hover:scale-105">Portfolio</a>
+                <a href="#contact" class="text-gray-300 hover:text-white transition-all-ease hover:scale-105">Contact</a>
+            </nav>
+            <!-- Mobile Menu Button (Hamburger) - now uses the new styles and JS trigger -->
+            <button class="mobile-nav-toggle md:hidden" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-menu">&#9776;</button>
+        </div>
+        <!-- Mobile Menu (Hidden by default, controlled by JS) -->
+        <nav id="mobile-menu" class="mobile-nav hidden" aria-label="Mobile Navigation">
+            <button class="mobile-nav-close" aria-label="Close navigation menu">&times;</button>
+            <a href="#hero" tabindex="0">Home</a>
+            <a href="#about" tabindex="0">About</a>
+            <a href="#case-studies" tabindex="0">Case Studies</a>
+            <a href="#portfolio" tabindex="0">Portfolio</a>
+            <a href="#contact" tabindex="0">Contact</a>
+        </nav>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="hero" class="relative z-0 min-h-screen flex items-center justify-center text-center p-8 overflow-hidden">
+            <!-- Three.js Canvas for 3D background -->
+            <canvas id="threejs-canvas"></canvas>
+
+            <div class="relative z-10 max-w-4xl mx-auto">
+                <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight opacity-0 fade-in-slide-up">
+                    <span class="gradient-text">Decentralized Design.</span><br>
+                    <span class="text-gray-100">Future-Proof Visuals.</span>
+                </h1>
+                <p class="text-xl sm:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto opacity-0 fade-in-slide-up fade-in-slide-up-delay-1">
+                    I'm a graphic designer specializing in captivating visuals for the web3 era, blending innovation with aesthetic excellence.
+                </p>
+                <a href="#portfolio" class="inline-block px-10 py-4 bg-gradient-to-r from-purple-500 to-rose-500 text-white font-bold text-lg rounded-full shadow-lg transition-all-ease hover:from-purple-600 hover:to-rose-600 hover:scale-105 hover:shadow-xl opacity-0 fade-in-slide-up fade-in-slide-up-delay-2">
+                    Explore My Work
+                    <span class="ml-2">&#x2192;</span> <!-- Right arrow -->
+                </a>
+            </div>
+        </section>
+
+        <!-- About Section -->
+        <section id="about" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl sm:text-5xl font-bold gradient-text mb-4">About Me</h2>
+                <p class="text-lg text-gray-400">Pioneering visual experiences in the decentralized space.</p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-start about-content-grid">
+                <!-- Left Column Content -->
+                <div>
+                    <p class="text-gray-300 text-lg leading-relaxed mb-8">
+                        My name is Iman Akbar, with an eye for detail, a pursuit for impactful visuals and a passion for creativity, I began on my fulfilling journey as a graphic designer to translate ideas into captivating graphics :)
+                    </p>
+
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-3">Education</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-300">
+                            <li><strong>University (2022 - current):</strong> Rochester Institute of Technology, Dubai. Bachelors of Computing and Information Technologies.</li>
+                            <li><strong>High School:</strong> Academic Achievement Open School, Tanzania. A-levels in Business, Economics and Math.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-3">Technical Skills</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-300">
+                            <li>Video Editing</li>
+                            <li>Poster Making</li>
+                            <li>Typography</li>
+                            <li>Color theory</li>
+                            <li>Basic Web Development
+                                <ul class="list-circle list-inside ml-6 text-gray-400">
+                                    <li>HTML</li>
+                                    <li>CSS</li>
+                                    <li>JavaScript</li>
+                                </ul>
+                            </li>
+                            <li>UI Design</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-3">Soft Skills</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-300">
+                            <li>Creativity</li>
+                            <li>Time-Management skills</li>
+                            <li>Attention to detail</li>
+                            <li>Communication</li>
+                            <li>Adaptability</li>
+                            <li>Collaboration</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Right Column Content -->
+                <div>
+                    <div class="relative flex justify-center items-center mb-8 md:mt-0">
+                        <!-- Circular image with subtle glow and hover effect -->
+                        <img src="https://placehold.co/300x300/1a082b/ec4899?text=Iman+Akbar" alt="Iman Akbar Profile Photo" class="rounded-full w-64 h-64 sm:w-80 sm:h-80 object-cover border-4 border-purple-500 shadow-xl transition-all-ease hover:scale-105 hover:shadow-2xl">
+                        <div class="absolute inset-0 rounded-full bg-purple-500 opacity-20 blur-xl"></div>
+                    </div>
+
+                    <div class="mt-0 md:mt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-3">Practical Experience</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-300">
+                            <li>Freelance: Created a Logo for a startup, Miles Express.</li>
+                            <li>Freelance: Created Logo for the RIT Dubai Dance club.</li>
+                            <li>Media and events director for the ASME Student Chapter. 2023 - current.</li>
+                            <li>Media Co-ordinator of the WIE IEEE student affinity club. 2024 - current.</li>
+                            <li>Graphic Designer for MUN at RIT Dubai. 2023 - 2024.</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-3">Relevant Courses</h3>
+                        <ul class="list-disc list-inside space-y-1 ml-4 text-gray-300">
+                            <li>Adobe Animate Essential Training from Linkedin Learning.</li>
+                            <li>Introduction to Graphic Design - Dimension from Linkedin Learning.</li>
+                            <li>Illustrator 2024 Essential Training from Linkedin Learning (in progress).</li>
+                            <li>Essential Skills in Adobe Illustrator Professional Certificate from Adobe and Linkedin Learning (in progress).</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-8">
+                        <h3 class="text-2xl font-semibold text-white mb-3">Softwares</h3>
+                        <div class="flex flex-wrap gap-4 mt-4">
+                            <div class="software-icon bg-gradient-to-br from-purple-500 to-fuchsia-500">
+                                <img src="https://placehold.co/60x60/8B5CF6/ffffff?text=C" alt="Canva Logo" class="w-full h-full rounded-full">
+                            </div>
+                            <div class="software-icon bg-gradient-to-br from-blue-500 to-indigo-500">
+                                <img src="https://placehold.co/60x60/3B82F6/ffffff?text=F" alt="Figma Logo" class="w-full h-full rounded-full">
+                            </div>
+                            <div class="software-icon bg-gradient-to-br from-gray-700 to-gray-900">
+                                <img src="https://placehold.co/60x60/4B5563/ffffff?text=%E2%88%9E" alt="Infinity Loop Logo" class="w-full h-full rounded-full">
+                            </div>
+                            <div class="software-icon text-logo bg-purple-700">Ps</div>
+                            <div class="software-icon text-logo bg-yellow-600">An</div>
+                            <div class="software-icon text-logo bg-orange-600">Ai</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Case Study Flip Carousel Section -->
+        <section id="case-studies" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl sm:text-5xl font-bold gradient-text mb-4">Case Studies</h2>
+                <p class="text-lg text-gray-400">In-depth looks at key projects.</p>
+            </div>
+
+            <div class="carousel-container relative">
+                <div id="case-study-flipper" class="carousel-flipper">
+                    <div id="card-face-1" class="card-face">
+                        <!-- Content will be injected here by JavaScript -->
+                    </div>
+                    <div id="card-face-2" class="card-face">
+                        <!-- Content for the next study will be pre-loaded here -->
+                    </div>
+                </div>
+                <!-- Carousel Navigation Buttons -->
+                <button id="carousel-prev" class="absolute left-0 top-1/2 -translate-y-1/2 bg-gray-900 bg-opacity-50 text-white p-3 rounded-full ml-2 shadow-lg hover:bg-opacity-70 transition-all-ease focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </button>
+                <button id="carousel-next" class="absolute right-0 top-1/2 -translate-y-1/2 bg-gray-900 bg-opacity-50 text-white p-3 rounded-full mr-2 shadow-lg hover:bg-opacity-70 transition-all-ease focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </button>
+            </div>
+        </section>
+
+        <!-- Case Study Detail Modal (Hidden by default) -->
+        <div id="case-study-modal" class="fixed inset-0 bg-black bg-opacity-90 z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+            <div class="modal-content bg-gray-900 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative p-8 shadow-2xl border border-gray-700 transform scale-95 transition-all duration-300">
+                <button id="close-modal" class="absolute top-4 right-4 text-gray-400 hover:text-white transition-all-ease">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+                <h3 id="modal-title" class="text-4xl font-bold gradient-text mb-6"></h3>
+                <div id="modal-body" class="text-gray-300 space-y-6 text-lg leading-relaxed">
+                    <!-- Case study content will be injected here by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Asymmetrical Gallery Section ("My Portfolio") -->
+        <section class="gallery-section" aria-labelledby="gallery-title" id="portfolio">
+            <h1 class="gallery-title" id="gallery-title">My Portfolio</h1>
+            <div class="gallery-masonry" role="list">
+                <img src="images\ASME FALL 24.png" alt="Poster design featuring bold, modern graphics and vibrant colors" tabindex="0" role="listitem" />
+                <img src="images\LATEST (1).png" alt="Powerpoint deck cover design with clean layout and professional style" tabindex="0" role="listitem" />
+                <img src="images\Psyche’s.png" alt="Square social media post design with bright colors and catchy typography" tabindex="0" role="listitem" />
+                <img src="images\Copy of Stem Girl.png" alt="Poster design featuring abstract layered shapes and bold typography" tabindex="0" role="listitem" />
+                <img src="images\copy of the OG design.png" alt="Creative social media post with dynamic illustrations and modern fonts" tabindex="0" role="listitem" />
+                <img src="images\5.png" alt="Creative social media post with dynamic illustrations and modern fonts" tabindex="0" role="listitem" />                
+                <img src="images\LEADERBOARD.png" alt="Professional presentation deck design with sleek visuals and elegant fonts" tabindex="0" role="listitem" />
+                <img src="images\Poster 1 (1).png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
+                <img src="images\bike.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
+                <img src="images\dodge.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
+                <img src="images\uiux.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
+                <img src="images\uiuxx.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
+                <img src="images\Copy of  The Peloponnesian War.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
+                <img src="images\wie.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
+            </div>
+        </section>
+    </main>
+
+    <!-- Call to Action Section -->
+    <section class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <h2 class="text-4xl sm:text-5xl font-bold gradient-text mb-6">Ready to build the future together?</h2>
+        <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
+            Let's create designs that not only look good but also drive innovation in the decentralized world.
+        </p>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+        <h2 class="text-4xl sm:text-5xl font-bold gradient-text mb-4">Contact Me</h2>
+        <div class="text-lg text-gray-300 space-y-4">
+            <p>Email: <a href="mailto:ima4160@rit.edu" class="text-purple-400 hover:text-fuchsia-400 transition-all-ease">ima4160@rit.edu</a></p>
+            <p>Phone: <a href="tel:+971501396279" class="text-purple-400 hover:text-fuchsia-400 transition-all-ease">+971501396279</a></p>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer>
+        <div class="container">
+            <div class="footer-links" role="navigation" aria-label="Footer links">
+                <a href="#about">About</a>
+                <a href="#portfolio">Portfolio</a>
+                <a href="#contact">Contact</a>
+                <a href="/privacy">Privacy Policy</a>
+            </div>
+            <div>&copy; 2024 Iman Akbar. All rights reserved. Designed for the decentralized future.</div>
+        </div>
+    </footer>
+
+    <!-- JavaScript for Interactions -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile Menu Toggle Logic
+            const mobileToggle = document.querySelector('.mobile-nav-toggle');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileClose = document.querySelector('.mobile-nav-close');
+
+            function openMenu() {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('open');
+                mobileToggle.setAttribute('aria-expanded', 'true');
+                mobileMenu.querySelector('a').focus();
+                document.body.style.overflow = 'hidden';
+            }
+
+            function closeMenu() {
+                mobileMenu.classList.remove('open');
+                mobileToggle.setAttribute('aria-expanded', 'false');
+                mobileToggle.focus();
+                setTimeout(() => mobileMenu.classList.add('hidden'), 300);
+                document.body.style.overflow = '';
+            }
+
+            mobileToggle.addEventListener('click', () => {
+                if (mobileMenu.classList.contains('hidden')) {
+                    openMenu();
+                } else {
+                    closeMenu();
+                }
+            });
+
+            mobileClose.addEventListener('click', () => {
+                closeMenu();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !mobileMenu.classList.contains('hidden')) {
+                    closeMenu();
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (!mobileMenu.contains(e.target) && !mobileToggle.contains(e.target) && !mobileMenu.classList.contains('hidden')) {
+                    closeMenu();
+                }
+            });
+
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    closeMenu();
+                });
+            });
+
+            // Case Study Flip Carousel Logic
+            const flipper = document.getElementById('case-study-flipper');
+            const cardFace1 = document.getElementById('card-face-1');
+            const cardFace2 = document.getElementById('card-face-2');
+            const caseStudyPrevButton = document.getElementById('carousel-prev');
+            const caseStudyNextButton = document.getElementById('carousel-next');
+
+            let currentCaseStudyIndex = 0;
+            let isFlipping = false; // Flag to prevent multiple concurrent flips
+            let flipDirection = 0; // 1 for next, -1 for prev
+            let activeFront = cardFace1; // References the currently visible card face
+            let activeBack = cardFace2;  // References the currently hidden card face
+
+            // Function to render content into a specific card face element
+            function renderCardContent(targetElement, index) {
+                const study = caseStudies[index];
+                if (!study) return;
+
+                targetElement.innerHTML = `
+                    <img src="${study.image}" alt="${study.title}" class="w-full h-[300px] object-cover rounded-t-xl">
+                    <div class="p-6 flex flex-col justify-between h-full">
+                        <h3 class="text-2xl font-semibold text-white mb-2">${study.title}</h3>
+                        <p class="text-gray-400 text-base mb-4">${study.description}</p>
+                        <button data-case-study-id="${study.id}" class="open-case-study-modal px-6 py-2 bg-gradient-to-r from-purple-600 to-rose-600 text-white font-semibold rounded-full shadow-md transition-all-ease hover:from-purple-700 hover:to-rose-700 hover:scale-105 mt-auto">
+                            Read Case Study
+                        </button>
+                    </div>
+                `;
+            }
+
+            // Case Studies Data
+            const caseStudies = [
+                {
+                    id: 1,
+                    title: "DeFi Platform Onboarding Redesign: A UX Deep Dive",
+                    image: "https://placehold.co/600x400/2d3748/a0aec0?text=DeFi+UX",
+                    description: "Improving user experience and conversion rates for a decentralized finance application.",
+                    content: `
+                        <p><strong>Problem:</strong> Users found the initial onboarding process for the DeFi platform confusing and cumbersome, leading to high drop-off rates.</p>
+                        <p><strong>Solution:</strong> We conducted extensive user research, heat mapping, and A/B testing to identify pain points. Based on insights, we redesigned the flow to be more intuitive, added clear progress indicators, and introduced micro-tutorials for complex steps.</p>
+                        <img src="https://placehold.co/800x450/4b254b/d292f7?text=UI+Mockup+1" alt="UI Mockup 1" class="my-6 rounded-lg shadow-md">
+                        <p><strong>Process:</strong> Our process involved competitor analysis, user journey mapping, wireframing, prototyping, and iterative testing with real users. We collaborated closely with smart contract developers to ensure technical feasibility.</p>
+                        <p><strong>Results:</strong> The redesign led to a <strong>25% increase in successful onboarding completions</strong> and a significant reduction in customer support queries related to initial setup.</p>
+                        <p><strong>Learnings:</strong> Simplifying complex web3 concepts through thoughtful UI/UX is paramount. Clear communication and user feedback loops are vital for dApp adoption.</p>
+                        <img src="https://placehold.co/800x450/4b254b/d292f7?text=UI+Mockup+2" alt="UI Mockup 2" class="my-6 rounded-lg shadow-md">
+                    `
+                },
+                {
+                    id: 2,
+                    title: "NFT Marketplace Brand Identity",
+                    image: "https://placehold.co/600x400/2d3748/a0aec0?text=NFT+Brand",
+                    description: "Crafting a unique and memorable brand for a new generative NFT marketplace.",
+                    content: `
+                        <p><strong>Problem:</strong> A new NFT marketplace needed a distinct brand identity to stand out in a crowded and rapidly evolving space.</p>
+                        <p><strong>Solution:</strong> We developed a brand narrative centered around creativity and decentralization. This translated into a vibrant logo, dynamic color palette, and a comprehensive visual language that extended to the website, social media, and generative art assets.</p>
+                        <img src="https://placehold.co/800x450/4b254b/d292f7?text=Brand+Mockup+1" alt="Brand Mockup 1" class="my-6 rounded-lg shadow-md">
+                        <p><strong>Process:</strong> Starting with discovery workshops, we explored various thematic directions. We then moved to logo concepts, mood boards, and the creation of base art layers for the generative collection. A style guide was developed to ensure consistency across all touchpoints.</p>
+                        <p><strong>Results:</strong> The brand launch was met with positive community reception, contributing to the successful sell-out of the genesis NFT collection within hours.</p>
+                        <p><strong>Learnings:</strong> Authenticity and community engagement are crucial for NFT projects. A strong, cohesive brand resonates deeply with decentralized audiences.</p>
+                        <img src="https://placehold.co/800x450/4b254b/d292f7?text=Brand+Mockup+2" alt="Brand Mockup 2" class="my-6 rounded-lg shadow-md">
+                    `
+                },
+                {
+                    id: 3,
+                    title: "Blockchain Gaming UI Framework",
+                    image: "https://placehold.co/600x400/2d3748/a0aec0?text=Gaming+UI",
+                    description: "Designing a scalable and immersive UI system for a play-to-earn blockchain game.",
+                    content: `
+                        <p><strong>Problem:</strong> A new blockchain game required a user interface that was both immersive for gamers and scalable for future feature additions and integrations.</p>
+                        <p><strong>Solution:</strong> We designed a modular UI framework, prioritizing performance and user feedback. This included custom HUD elements, inventory systems, and in-game transaction interfaces that felt native to the gaming experience, not just tacked on.</p>
+                        <img src="https://placehold.co/800x450/4b254b/d292f7?text=Game+UI+Mockup+1" alt="Game UI Mockup 1" class="my-6 rounded-lg shadow-md">
+                        <p><strong>Process:</strong> Our approach involved extensive game-specific UI/UX research, competitive analysis of existing blockchain games, and rapid prototyping in a game engine environment. We focused on creating assets that could be easily adapted and scaled.</p>
+                        <p><strong>Results:</strong> The framework provided a solid foundation for the game's development, receiving positive early feedback on its aesthetic and usability from playtesters.</p>
+                        <p><strong>Learnings:</strong> Seamless integration of blockchain elements into gaming UX is a challenge that requires close collaboration between designers and game developers. Visual feedback for on-chain actions is critical.</p>
+                        <img src="https://placehold.co/800x450/4b254b/d292f7?text=UI+Mockup+2" alt="UI Mockup 2" class="my-6 rounded-lg shadow-md">
+                    `
+                }
+            ];
+
+            // Initialize content for both faces on load
+            renderCardContent(activeFront, currentCaseStudyIndex);
+            renderCardContent(activeBack, (currentCaseStudyIndex + 1) % caseStudies.length);
+
+            // Case Study Modal Logic
+            const caseStudyModal = document.getElementById('case-study-modal');
+            const closeModalButton = document.getElementById('close-modal');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+
+            // Delegated event listener for opening modal
+            document.addEventListener('click', function(event) {
+                if (event.target.classList.contains('open-case-study-modal')) {
+                    const caseStudyId = parseInt(event.target.dataset.caseStudyId);
+                    const caseStudy = caseStudies.find(cs => cs.id === caseStudyId);
+
+                    if (caseStudy) {
+                        modalTitle.textContent = caseStudy.title;
+                        modalBody.innerHTML = caseStudy.content;
+                        caseStudyModal.classList.remove('hidden');
+                        document.body.classList.add('overflow-hidden');
+                        setTimeout(() => {
+                            caseStudyModal.classList.remove('opacity-0');
+                            caseStudyModal.querySelector('.modal-content').classList.remove('scale-95');
+                        }, 10);
+                    }
+                }
+            });
+
+            closeModalButton.addEventListener('click', function() {
+                caseStudyModal.classList.add('opacity-0');
+                caseStudyModal.querySelector('.modal-content').classList.add('scale-95');
+                setTimeout(() => {
+                    caseStudyModal.classList.add('hidden');
+                    document.body.classList.remove('overflow-hidden');
+                }, 300);
+            });
+
+            caseStudyModal.addEventListener('click', function(event) {
+                if (event.target === caseStudyModal) {
+                    closeModalButton.click();
+                }
+            });
+
+
+            // --- Flip Carousel Logic (Revised for single flip using setTimeout) ---
+
+            const FLIP_DURATION = 800; // Match CSS transition duration in milliseconds (0.8s)
+            let flipTimeout = null; // To store the timeout ID
+
+            // Function to initiate the flip animation
+            function initiateFlip(direction) {
+                if (isFlipping) return; // Exit if already animating
+                isFlipping = true;
+                flipDirection = direction; // Store the current flip direction
+
+                // Disable navigation buttons during animation
+                caseStudyPrevButton.disabled = true;
+                caseStudyNextButton.disabled = true;
+
+                // Determine the index of the case study that will become visible
+                let nextCaseStudyIndex;
+                if (direction === 1) { // Going to next card
+                    nextCaseStudyIndex = (currentCaseStudyIndex + 1) % caseStudies.length;
+                } else { // Going to previous card
+                    nextCaseStudyIndex = (currentCaseStudyIndex - 1 + caseStudies.length) % caseStudies.length;
+                }
+
+                // Preload the content for the *new* card onto the current 'activeBack' element.
+                // This content will become visible when activeBack flips to the front.
+                renderCardContent(activeBack, nextCaseStudyIndex);
+
+                // Apply the 3D rotation to both elements simultaneously
+                // The activeFront rotates away, activeBack rotates into view
+                if (direction === 1) { // Forward flip (activeFront rotates to 180, activeBack to 360/0)
+                    activeFront.style.transform = 'rotateY(180deg)';
+                    activeBack.style.transform = 'rotateY(360deg)';
+                } else { // Backward flip (activeFront rotates to -180, activeBack to 0)
+                    activeFront.style.transform = 'rotateY(-180deg)';
+                    activeBack.style.transform = 'rotateY(0deg)';
+                }
+
+                // Schedule the cleanup and state update after the animation duration
+                flipTimeout = setTimeout(completeFlip, FLIP_DURATION);
+            }
+
+            // This function handles the state update and reset *after* the visual flip animation is complete
+            function completeFlip() {
+                // This function should only be called once per flip via the setTimeout
+                clearTimeout(flipTimeout); // Clear the timeout just in case
+
+                // Update the global currentCaseStudyIndex based on the flip direction
+                currentCaseStudyIndex = (currentCaseStudyIndex + (flipDirection === 1 ? 1 : -1) + caseStudies.length) % caseStudies.length;
+
+                // Temporarily disable CSS transitions on both faces for an instantaneous reset
+                activeFront.style.transition = 'none';
+                activeBack.style.transition = 'none';
+
+                // Swap the references to the elements: the former 'activeBack' is now the 'activeFront', and vice-versa
+                const temp = activeFront;
+                activeFront = activeBack;
+                activeBack = temp;
+
+                // Instantly reset the transforms to their base states for the *next* flip cycle
+                // The new activeFront should be at 0 degrees, the new activeBack at 180 degrees
+                activeFront.style.transform = 'rotateY(0deg)';
+                activeBack.style.transform = 'rotateY(180deg)';
+
+                // Preload content for the *next* card onto the newly designated 'activeBack' element
+                const preloadIndex = (currentCaseStudyIndex + 1) % caseStudies.length;
+                renderCardContent(activeBack, preloadIndex);
+
+                // Use requestAnimationFrame to re-enable transitions and buttons on the next browser paint cycle.
+                // This prevents a visual "snap" after the instant reset.
+                requestAnimationFrame(() => {
+                    activeFront.style.transition = 'transform 0.8s ease-in-out';
+                    activeBack.style.transition = 'transform 0.8s ease-in-out';
+                    caseStudyPrevButton.disabled = false; // Re-enable navigation buttons
+                    caseStudyNextButton.disabled = false;
+                    isFlipping = false; // Reset the animation flag
+                    flipDirection = 0; // Reset flip direction after completion
+                });
+            }
+
+            // Add event listeners for the navigation buttons
+            caseStudyNextButton.addEventListener('click', () => initiateFlip(1));
+            caseStudyPrevButton.addEventListener('click', () => initiateFlip(-1));
+
+
+            // Three.js 3D Sphere Animation
+            window.onload = function() {
+                const canvas = document.getElementById('threejs-canvas');
+                const scene = new THREE.Scene();
+                const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+                const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.setPixelRatio(window.devicePixelRatio);
+
+                const geometry1 = new THREE.SphereGeometry(1, 32, 32);
+                const material1 = new THREE.MeshStandardMaterial({ color: 0xec4899, roughness: 0.5, metalness: 0.8 });
+                const sphere1 = new THREE.Mesh(geometry1, material1);
+                scene.add(sphere1);
+
+                const geometry2 = new THREE.SphereGeometry(0.7, 32, 32);
+                const material2 = new THREE.MeshStandardMaterial({ color: 0xa855f7, roughness: 0.6, metalness: 0.7, transparent: true, opacity: 0.9 });
+                const sphere2 = new THREE.Mesh(geometry2, material2);
+                scene.add(sphere2);
+
+                const geometry3 = new THREE.SphereGeometry(0.5, 32, 32);
+                const material3 = new THREE.MeshStandardMaterial({ color: 0xf472b6, roughness: 0.4, metalness: 0.9, transparent: true, opacity: 0.8 });
+                const sphere3 = new THREE.Mesh(geometry3, material3);
+                scene.add(sphere3);
+
+                const pointLight1 = new THREE.PointLight(0xa855f7, 1.5, 100);
+                pointLight1.position.set(5, 5, 5);
+                scene.add(pointLight1);
+
+                const pointLight2 = new THREE.PointLight(0xec4899, 1.0, 100);
+                pointLight2.position.set(-5, -5, -5);
+                scene.add(pointLight2);
+
+                const ambientLight = new THREE.AmbientLight(0x404040);
+                scene.add(ambientLight);
+
+                camera.position.z = 5;
+
+                const animate = function () {
+                    requestAnimationFrame(animate);
+
+                    const time = Date.now() * 0.0001;
+
+                    sphere1.rotation.x += 0.005;
+                    sphere1.rotation.y += 0.005;
+                    sphere1.position.x = Math.sin(time * 0.7) * 8;
+                    sphere1.position.y = Math.cos(time * 0.5) * 6;
+                    sphere1.position.z = Math.sin(time * 0.3 + Math.PI / 4) * 4;
+
+                    sphere2.rotation.x += 0.008;
+                    sphere2.rotation.y += 0.003;
+                    sphere2.position.x = Math.cos(time * 0.9 + Math.PI / 2) * 7;
+                    sphere2.position.y = Math.sin(time * 0.6 + Math.PI / 4) * 5;
+                    sphere2.position.z = Math.cos(time * 0.4) * 3;
+
+                    sphere3.rotation.x += 0.003;
+                    sphere3.rotation.y += 0.007;
+                    sphere3.position.x = Math.sin(time * 0.5 + Math.PI) * 9;
+                    sphere3.position.y = Math.cos(time * 0.8 + Math.PI / 3) * 7;
+                    sphere3.position.z = Math.sin(time * 0.6) * 5;
+
+                    renderer.render(scene, camera);
+                };
+
+                window.addEventListener('resize', () => {
+                    camera.aspect = window.innerWidth / window.innerHeight;
+                    camera.updateProjectionMatrix();
+                    renderer.setSize(window.innerWidth, window.innerHeight);
+                });
+
+                animate();
+            };
+        });
+
+        // Girl Avatar and Speech Bubble JS
+        document.addEventListener('DOMContentLoaded', function() {
+            const girlAvatarContainer = document.getElementById('girl-avatar-container');
+            const speechBubble = document.getElementById('speech-bubble');
+            let hideBubbleTimeout;
+
+            const sectionTexts = {
+                'hero': "Welcome! Let's explore the future of design!",
+                'about': "Hey there, that's me!",
+                'case-studies': "Dive deeper into my design journeys here!",
+                'portfolio': "Check out my visual creations!",
+                'contact': "Ready to build something amazing? Let's chat!"
+            };
+
+            function updateAvatarPositionAndVisibility(e) {
+                if (window.innerWidth <= 768) {
+                    girlAvatarContainer.style.display = 'none';
+                    return;
+                }
+
+                if (girlAvatarContainer.style.display === 'none' || !girlAvatarContainer.style.display) {
+                    girlAvatarContainer.style.display = 'block';
+                }
+
+                const mouseX = e.clientX;
+                const mouseY = e.clientY;
+                girlAvatarContainer.style.transform = `translate(${mouseX}px, ${mouseY}px)`;
+            }
+
+            function showSpeechBubble(text) {
+                clearTimeout(hideBubbleTimeout);
+                speechBubble.textContent = text;
+                speechBubble.style.visibility = 'visible';
+                speechBubble.style.opacity = '1';
+            }
+
+            function hideSpeechBubbleDelayed() {
+                hideBubbleTimeout = setTimeout(() => {
+                    speechBubble.style.opacity = '0';
+                    speechBubble.style.visibility = 'hidden';
+                }, 200);
+            }
+
+            document.body.addEventListener('mousemove', updateAvatarPositionAndVisibility);
+
+            const sections = document.querySelectorAll('section[id]');
+            sections.forEach(section => {
+                section.addEventListener('mouseenter', function() {
+                    if (window.innerWidth <= 768) return;
+
+                    const sectionId = section.id;
+                    const text = sectionTexts[sectionId];
+                    if (text) {
+                        showSpeechBubble(text);
+                    }
+                });
+
+                section.addEventListener('mouseleave', function() {
+                    if (window.innerWidth <= 768) return;
+                    hideSpeechBubbleDelayed();
+                });
+            });
+
+            function handleResize() {
+                if (window.innerWidth <= 768) {
+                    girlAvatarContainer.style.display = 'none';
+                    speechBubble.style.visibility = 'hidden';
+                    speechBubble.style.opacity = '0';
+                } else {
+                    // On larger screens, ensure it's visible if mouse moves
+                }
+            }
+
+            handleResize();
+            window.addEventListener('resize', handleResize);
+        });
+    </script>
+</body>
+</html>

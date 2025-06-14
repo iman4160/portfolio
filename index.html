@@ -229,8 +229,9 @@
             cursor: pointer;
             color: #e2e8f0; /* Adapted to theme */
         }
+        /* Adjusted main padding to slightly reduce overall vertical space */
         main {
-            padding: 48px 0 96px 0;
+            padding: 64px 0; /* Reduced from 48px 0 96px 0 to 64px top/bottom */
         }
         .gallery-section {
             background: #1e0b30; /* Adapted to theme */
@@ -249,7 +250,7 @@
             text-align: center;
         }
 
-        /* Masonry gallery container using CSS columns */
+        /* REVERTED: Masonry gallery container using CSS columns */
         .gallery-masonry {
             column-count: 4;
             column-gap: 24px;
@@ -265,25 +266,95 @@
                 column-count: 1;
             }
         }
-        /* Gallery items inside columns */
-        .gallery-masonry img {
-            width: 100%;
-            margin-bottom: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3); /* Adapted to theme */
-            cursor: pointer;
-            display: block;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-            break-inside: avoid; /* Prevents images from being cut in half across columns */
-        }
-        .gallery-masonry img:hover,
-        .gallery-masonry img:focus {
-            transform: scale(1.04);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.4); /* Adapted to theme */
-            outline: none;
-            z-index: 10;
+
+        /* Individual portfolio item wrapper */
+        .portfolio-item-wrapper {
             position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            /* IMPORANT for masonry: Ensures item stays in one column */
+            break-inside: avoid;
+            margin-bottom: 24px; /* Maintain vertical spacing between items within a column */
+            display: block; /* Needed for break-inside to work reliably */
+            width: 100%; /* Ensures it fills the column width */
         }
+
+        .portfolio-item-wrapper:hover {
+            transform: scale(1.04); /* Scale the entire wrapper */
+            box-shadow: 0 12px 24px rgba(0,0,0,0.4); /* New shadow on hover */
+            outline: none;
+            z-index: 10; /* Bring hovered item forward */
+            position: relative; /* Maintain z-index context */
+        }
+
+        /* Image styling within the wrapper */
+        .portfolio-item-wrapper img.portfolio-image {
+            width: 100%;
+            height: auto; /* Allow natural height based on content */
+            display: block;
+            border-radius: 12px; /* Keep image rounded corners */
+            transition: opacity 0.25s ease; /* Transition for dimming */
+        }
+
+        /* Overlay for dimming */
+        .portfolio-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6); /* Black with 60% opacity */
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.3s ease-in-out; /* Smooth fade-in */
+            border-radius: 12px; /* Match wrapper corners */
+            z-index: 1; /* Above image, below description */
+        }
+
+        /* Description text container */
+        .portfolio-description {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1rem; /* Adjust padding as needed */
+            text-align: center;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0)); /* Gradient fade from black to transparent */
+            opacity: 0; /* Start hidden */
+            transform: translateY(100%); /* Start off-screen below */
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; /* Smooth fade and slide */
+            z-index: 2; /* Above overlay */
+            box-sizing: border-box; /* Include padding in width */
+            color: #e2e8f0; /* Ensure text is visible */
+        }
+
+        /* Hover effects for overlay and description */
+        .portfolio-item-wrapper:hover .portfolio-overlay {
+            opacity: 1;
+        }
+
+        .portfolio-item-wrapper:hover .portfolio-description {
+            opacity: 1;
+            transform: translateY(0); /* Slide up into view */
+        }
+
+        /* Removed flex-basis and max-width for .portfolio-item-wrapper as they are not needed for column-based masonry */
+        /* @media (max-width: 1024px) {
+            .portfolio-item-wrapper {
+                flex-basis: calc(50% - 12px);
+                max-width: calc(50% - 12px);
+            }
+        }
+        @media (max-width: 640px) {
+            .portfolio-item-wrapper {
+                flex-basis: 100%;
+                max-width: 100%;
+            }
+        } */
+
+
         footer {
             background: #0a0a0a; /* Adapted to theme */
             border-top: 1px solid #2d3748; /* Adapted to theme */
@@ -468,11 +539,11 @@
 
             <div class="relative z-10 max-w-4xl mx-auto">
                 <h1 class="text-5xl sm:text-6xl lg:text-7xl font-extrabold mb-6 leading-tight opacity-0 fade-in-slide-up">
-                    <span class="gradient-text">Decentralized Design.</span><br>
-                    <span class="text-gray-100">Future-Proof Visuals.</span>
+                    <span class="gradient-text">Where Creativity.</span><br>
+                    <span class="text-gray-100">Meets Visual Impact.</span>
                 </h1>
                 <p class="text-xl sm:text-2xl text-gray-300 mb-10 max-w-2xl mx-auto opacity-0 fade-in-slide-up fade-in-slide-up-delay-1">
-                    I'm a graphic designer specializing in captivating visuals for the web3 era, blending innovation with aesthetic excellence.
+                    My passion as a graphic designer is to create captivating visuals that seamlessly blend innovative concepts with aesthetic excellence
                 </p>
                 <a href="#portfolio" class="inline-block px-10 py-4 bg-gradient-to-r from-purple-500 to-rose-500 text-white font-bold text-lg rounded-full shadow-lg transition-all-ease hover:from-purple-600 hover:to-rose-600 hover:scale-105 hover:shadow-xl opacity-0 fade-in-slide-up fade-in-slide-up-delay-2">
                     Explore My Work
@@ -482,7 +553,7 @@
         </section>
 
         <!-- About Section -->
-        <section id="about" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <section id="about" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl sm:text-5xl font-bold gradient-text mb-4">About Me</h2>
                 <p class="text-lg text-gray-400">Pioneering visual experiences in the decentralized space.</p>
@@ -584,7 +655,7 @@
         </section>
 
         <!-- Case Study Flip Carousel Section -->
-        <section id="case-studies" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+        <section id="case-studies" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl sm:text-5xl font-bold gradient-text mb-4">Case Studies</h2>
                 <p class="text-lg text-gray-400">In-depth looks at key projects.</p>
@@ -626,26 +697,185 @@
         <section class="gallery-section" aria-labelledby="gallery-title" id="portfolio">
             <h1 class="gallery-title" id="gallery-title">My Portfolio</h1>
             <div class="gallery-masonry" role="list">
-                <img src="images\ASME FALL 24.png" alt="Poster design featuring bold, modern graphics and vibrant colors" tabindex="0" role="listitem" />
-                <img src="images\LATEST (1).png" alt="Powerpoint deck cover design with clean layout and professional style" tabindex="0" role="listitem" />
-                <img src="images\Psyche’s.png" alt="Square social media post design with bright colors and catchy typography" tabindex="0" role="listitem" />
-                <img src="images\Copy of Stem Girl.png" alt="Poster design featuring abstract layered shapes and bold typography" tabindex="0" role="listitem" />
-                <img src="images\copy of the OG design.png" alt="Creative social media post with dynamic illustrations and modern fonts" tabindex="0" role="listitem" />
-                <img src="images\5.png" alt="Creative social media post with dynamic illustrations and modern fonts" tabindex="0" role="listitem" />                
-                <img src="images\LEADERBOARD.png" alt="Professional presentation deck design with sleek visuals and elegant fonts" tabindex="0" role="listitem" />
-                <img src="images\Poster 1 (1).png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
-                <img src="images\bike.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
-                <img src="images\dodge.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
-                <img src="images\uiux.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
-                <img src="images\uiuxx.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
-                <img src="images\Copy of  The Peloponnesian War.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
-                <img src="images\wie.png" alt="Square format social media promotional graphic design with bold accents" tabindex="0" role="listitem" />
+                <!-- Portfolio Item 1 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/copy of the OG design.png" alt="Creative social media post with dynamic illustrations and modern fonts" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">OG Concept Design</h4>
+                        <p class="text-sm text-gray-300">An original social media piece featuring unique illustrations and a contemporary feel.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 2 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/copy of the OG design (2).png" alt="Creative social media post with dynamic illustrations and modern fonts" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Variant Concept Design</h4>
+                        <p class="text-sm text-gray-300">A variation of the original social media design, maintaining its core visual appeal.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 3 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/5.png" alt="Square social media post design with bright colors and catchy typography" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Abstract Event Poster</h4>
+                        <p class="text-sm text-gray-300">A poster design combining vibrant colors and abstract shapes for a modern look.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 4 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/Copy of Stem Girl.png" alt="Poster design featuring abstract layered shapes and bold typography" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">STEM Girl Promotion</h4>
+                        <p class="text-sm text-gray-300">A compelling poster promoting STEM education with a focus on female empowerment.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 5 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images\sticker.jpg" alt="Engineering seminar poster with modern typography" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Engineering Seminar Poster</h4>
+                        <p class="text-sm text-gray-300">Promotional poster for an engineering seminar, highlighting key speakers and topics.</p>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 5 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images\sticker2.jpg" alt="Engineering seminar poster with modern typography" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Engineering Seminar Poster</h4>
+                        <p class="text-sm text-gray-300">Promotional poster for an engineering seminar, highlighting key speakers and topics.</p>
+                    </div>
+                </div>
+
+                <!-- Portfolio Item 5 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/engineering seminar 2 poster .png" alt="Engineering seminar poster with modern typography" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Engineering Seminar Poster</h4>
+                        <p class="text-sm text-gray-300">Promotional poster for an engineering seminar, highlighting key speakers and topics.</p>
+                    </div>
+                </div>
+
+                <div class="portfolio-item-wrapper">
+                    <img src="images\WIE GITEX Post.png" alt="Engineering seminar poster with modern typography" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Engineering Seminar Poster</h4>
+                        <p class="text-sm text-gray-300">Promotional poster for an engineering seminar, highlighting key speakers and topics.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 6 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/ASME FALL 24.png" alt="ASME Fall 2024 Event Poster" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">ASME Fall Event Poster</h4>
+                        <p class="text-sm text-gray-300">Striking poster design for the ASME Fall 2024 event, ensuring high visibility.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 7 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/Professor & Engineering Research Chair in Advanced Manufacturing Processes and Automation at the University of Alberta, Canada..png" alt="Academic Presentation Deck Cover" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Academic Presentation Cover</h4>
+                        <p class="text-sm text-gray-300">A sophisticated cover for a university presentation on advanced manufacturing.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 8 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/Psyche’s.png" alt="Psyche's Art Social Media Graphic" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Psyche's Social Media Art</h4>
+                        <p class="text-sm text-gray-300">Creative social media post for an art series, featuring vibrant colors and expressive typography.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 9 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/LEADERBOARD.png" alt="Gaming Leaderboard UI Design" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Gaming Leaderboard UI</h4>
+                        <p class="text-sm text-gray-300">User interface design for a competitive game leaderboard, focusing on clarity and visual hierarchy.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 10 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/nyuad (2).png" alt="NYUAD Event Promotional Material" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">NYUAD Event Promotion</h4>
+                        <p class="text-sm text-gray-300">Promotional graphic for an event at NYU Abu Dhabi, designed to attract a student audience.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 11 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/First Aid.png" alt="First Aid Course Flyer Design" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">First Aid Course Flyer</h4>
+                        <p class="text-sm text-gray-300">Informative and engaging flyer for a first aid certification course.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 12 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/Copy of  The Peloponnesian War.png" alt="The Peloponnesian War Book Cover" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Historical Book Cover</h4>
+                        <p class="text-sm text-gray-300">Evocative book cover design for a historical work on the Peloponnesian War.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 13 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/bike.png" alt="Cycling Event Promotional Graphic" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Cycling Event Graphic</h4>
+                        <p class="text-sm text-gray-300">Dynamic promotional graphic designed for a competitive cycling event.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 14 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/dodge.png" alt="Dodgeball Tournament Poster" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Dodgeball Tournament Poster</h4>
+                        <p class="text-sm text-gray-300">An exciting and energetic poster for a local dodgeball tournament.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 15 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/scream poster.PNG" alt="Movie Poster Redesign Concept" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Horror Movie Poster Redesign</h4>
+                        <p class="text-sm text-gray-300">A conceptual redesign of a classic horror movie poster, focusing on modern aesthetics.</p>
+                    </div>
+                </div>
+                <!-- Portfolio Item 16 -->
+                <div class="portfolio-item-wrapper">
+                    <img src="images/POSTERR.png" alt="Abstract Art Exhibition Poster" class="portfolio-image" tabindex="0" role="listitem" />
+                    <div class="portfolio-overlay"></div>
+                    <div class="portfolio-description">
+                        <h4 class="text-lg font-semibold text-white mb-1">Abstract Exhibition Poster</h4>
+                        <p class="text-sm text-gray-300">Poster design for an abstract art exhibition, using geometric forms and striking colors.</p>
+                    </div>
+                </div>
             </div>
         </section>
     </main>
 
     <!-- Call to Action Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+    <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <h2 class="text-4xl sm:text-5xl font-bold gradient-text mb-6">Ready to build the future together?</h2>
         <p class="text-xl text-gray-300 mb-10 max-w-2xl mx-auto">
             Let's create designs that not only look good but also drive innovation in the decentralized world.
@@ -653,7 +883,7 @@
     </section>
 
     <!-- Contact Section -->
-    <section id="contact" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+    <section id="contact" class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
         <h2 class="text-4xl sm:text-5xl font-bold gradient-text mb-4">Contact Me</h2>
         <div class="text-lg text-gray-300 space-y-4">
             <p>Email: <a href="mailto:ima4160@rit.edu" class="text-purple-400 hover:text-fuchsia-400 transition-all-ease">ima4160@rit.edu</a></p>
@@ -762,9 +992,9 @@
             const caseStudies = [
                 {
                     id: 1,
-                    title: "DeFi Platform Onboarding Redesign: A UX Deep Dive",
+                    title: "TEXT TEXT TEXT",
                     image: "https://placehold.co/600x400/2d3748/a0aec0?text=DeFi+UX",
-                    description: "Improving user experience and conversion rates for a decentralized finance application.",
+                    description: "MORE TEXT.",
                     content: `
                         <p><strong>Problem:</strong> Users found the initial onboarding process for the DeFi platform confusing and cumbersome, leading to high drop-off rates.</p>
                         <p><strong>Solution:</strong> We conducted extensive user research, heat mapping, and A/B testing to identify pain points. Based on insights, we redesigned the flow to be more intuitive, added clear progress indicators, and introduced micro-tutorials for complex steps.</p>
@@ -777,9 +1007,9 @@
                 },
                 {
                     id: 2,
-                    title: "NFT Marketplace Brand Identity",
+                    title: "TEXT TEXT TEXT",
                     image: "https://placehold.co/600x400/2d3748/a0aec0?text=NFT+Brand",
-                    description: "Crafting a unique and memorable brand for a new generative NFT marketplace.",
+                    description: "MORE TEXT",
                     content: `
                         <p><strong>Problem:</strong> A new NFT marketplace needed a distinct brand identity to stand out in a crowded and rapidly evolving space.</p>
                         <p><strong>Solution:</strong> We developed a brand narrative centered around creativity and decentralization. This translated into a vibrant logo, dynamic color palette, and a comprehensive visual language that extended to the website, social media, and generative art assets.</p>
@@ -792,9 +1022,9 @@
                 },
                 {
                     id: 3,
-                    title: "Blockchain Gaming UI Framework",
+                    title: "TEXT TEXT TEXT",
                     image: "https://placehold.co/600x400/2d3748/a0aec0?text=Gaming+UI",
-                    description: "Designing a scalable and immersive UI system for a play-to-earn blockchain game.",
+                    description: "MORE TEXT",
                     content: `
                         <p><strong>Problem:</strong> A new blockchain game required a user interface that was both immersive for gamers and scalable for future feature additions and integrations.</p>
                         <p><strong>Solution:</strong> We designed a modular UI framework, prioritizing performance and user feedback. This included custom HUD elements, inventory systems, and in-game transaction interfaces that felt native to the gaming experience, not just tacked on.</p>
@@ -809,6 +1039,7 @@
 
             // Initialize content for both faces on load
             renderCardContent(activeFront, currentCaseStudyIndex);
+            // The content for the next card should be pre-loaded onto the back face for the first flip
             renderCardContent(activeBack, (currentCaseStudyIndex + 1) % caseStudies.length);
 
             // Case Study Modal Logic
@@ -852,7 +1083,7 @@
             });
 
 
-            // --- Flip Carousel Logic (Revised for single flip using setTimeout) ---
+            // --- Flip Carousel Logic (Revised for single seamless flip) ---
 
             const FLIP_DURATION = 800; // Match CSS transition duration in milliseconds (0.8s)
             let flipTimeout = null; // To store the timeout ID
@@ -866,18 +1097,6 @@
                 // Disable navigation buttons during animation
                 caseStudyPrevButton.disabled = true;
                 caseStudyNextButton.disabled = true;
-
-                // Determine the index of the case study that will become visible
-                let nextCaseStudyIndex;
-                if (direction === 1) { // Going to next card
-                    nextCaseStudyIndex = (currentCaseStudyIndex + 1) % caseStudies.length;
-                } else { // Going to previous card
-                    nextCaseStudyIndex = (currentCaseStudyIndex - 1 + caseStudies.length) % caseStudies.length;
-                }
-
-                // Preload the content for the *new* card onto the current 'activeBack' element.
-                // This content will become visible when activeBack flips to the front.
-                renderCardContent(activeBack, nextCaseStudyIndex);
 
                 // Apply the 3D rotation to both elements simultaneously
                 // The activeFront rotates away, activeBack rotates into view
@@ -895,7 +1114,6 @@
 
             // This function handles the state update and reset *after* the visual flip animation is complete
             function completeFlip() {
-                // This function should only be called once per flip via the setTimeout
                 clearTimeout(flipTimeout); // Clear the timeout just in case
 
                 // Update the global currentCaseStudyIndex based on the flip direction
